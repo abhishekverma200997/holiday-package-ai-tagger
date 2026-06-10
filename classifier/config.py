@@ -64,7 +64,7 @@ GROUP_TYPES = {
 #   family    80 — moderately specific signals; mid-range threshold
 THRESHOLDS = {
     "romantic":   82,
-    "adventure":  85,
+    "adventure":  80,
     "spiritual":  78,
     "family":     80,
 }
