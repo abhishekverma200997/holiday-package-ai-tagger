@@ -65,16 +65,27 @@ def seed_historical_data():
             # 4% missing field rate
             if random.random() < 0.04:
                 field = random.choice(["reasoning", "bolded_terms", "activity_scores"])
+                resolved_on_retry = random.random() < 0.82
+                ts = (day_date + timedelta(hours=random.randint(8, 20))).isoformat()
+                # Attempt 1 — initial failure, triggers rerun
                 entries.append({
                     "package_id":      pkg_id,
                     "event":           "missing_fields",
                     "fields_affected": [field],
                     "action_taken":    "rerun",
-                    "resolved":        random.random() < 0.82,
+                    "resolved":        False,
                     "attempt":         1,
-                    "timestamp":       (day_date + timedelta(
-                        hours=random.randint(8, 20)
-                    )).isoformat(),
+                    "timestamp":       ts,
+                })
+                # Attempt 2 — the retry result
+                entries.append({
+                    "package_id":      pkg_id,
+                    "event":           "missing_fields",
+                    "fields_affected": [] if resolved_on_retry else [field],
+                    "action_taken":    "resolved" if resolved_on_retry else "human_review",
+                    "resolved":        resolved_on_retry,
+                    "attempt":         2,
+                    "timestamp":       ts,
                 })
 
             # 1.5% extra field rate
